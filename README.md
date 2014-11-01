@@ -65,11 +65,15 @@ $ sudo apt-get install mysql-server mysql-client libmysqlclient-dev phpmyadmin
 ```
 
 git
+```
+$ sudo apt-get install git
+```
 
 Почтовый сервер postfix
 ```
 $ sudo apt-get install -y postfix
 ```
+
 memcached
 ```
 $ sudo apt-get install memcached
