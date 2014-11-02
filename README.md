@@ -76,7 +76,7 @@ $ sudo apt-get install -y postfix
 
 memcached
 ```
-$ sudo apt-get install memcached
+$ sudo apt-get install memcached php5-memcached
 ```
 
 ## Настройка Apache
@@ -218,7 +218,7 @@ proxy_busy_buffers_size 64k;
 proxy_temp_file_write_size 64k;
 ```
 
-Добавить вефолтный конфиг ссылку на backend и сделать доступным phpmyadmin
+Добавить в дефолтный конфиг ссылку на backend и сделать доступным phpmyadmin
 ```
 $ sudo nano /etc/nginx/sites-enabled/default
 ```
@@ -239,14 +239,11 @@ location /phpmyadmin/ {
 }
 ```
 
-Для каждого сайта создать конфиг в /etc/nginx/sites-enabled/ (upstream backend указать только в 1 конфиге)
+Для каждого сайта создать конфиг в /etc/nginx/sites-enabled/
 ```
 $ sudo nano /etc/nginx/sites-enabled/example.com
 ```
 ```
-upstream backend {
-        server 127.0.0.1:81;
-}
 server {
         listen          80;
         error_page      404     /404.html;
