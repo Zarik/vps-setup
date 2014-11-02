@@ -217,6 +217,28 @@ proxy_buffers 32 32k;
 proxy_busy_buffers_size 64k;
 proxy_temp_file_write_size 64k;
 ```
+
+Добавить вефолтный конфиг ссылку на backend и сделать доступным phpmyadmin
+```
+$ sudo nano /etc/nginx/sites-enabled/default
+```
+```
+upstream backend {
+        server 127.0.0.1:81;
+}
+```
+```
+location /phpmyadmin/ {
+  proxy_pass http://127.0.0.1:81/phpmyadmin/;
+  proxy_set_header Host $host;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $remote_addr;
+  proxy_connect_timeout 120;
+  proxy_send_timeout 120;
+  proxy_read_timeout 180;
+}
+```
+
 Для каждого сайта создать конфиг в /etc/nginx/sites-enabled/ (upstream backend указать только в 1 конфиге)
 ```
 $ sudo nano /etc/nginx/sites-enabled/example.com
@@ -251,20 +273,5 @@ server {
 server {
  	server_name www.example.com;
  	rewrite ^(.*) http://example.com$1 permanent;
-}
-```
-Доступ к phpmyadmin
-```
-$ sudo nano /etc/nginx/sites-enabled/phpmyadmin
-```
-```
-location /phpmyadmin/ {
-  proxy_pass http://127.0.0.1:81/phpmyadmin/;
-  proxy_set_header Host $host;
-  proxy_set_header X-Real-IP $remote_addr;
-  proxy_set_header X-Forwarded-For $remote_addr;
-  proxy_connect_timeout 120;
-  proxy_send_timeout 120;
-  proxy_read_timeout 180;
 }
 ```
