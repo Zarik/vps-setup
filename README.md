@@ -1,6 +1,18 @@
-# Настройка VPS сервера на Digital Ocean
+# Настройка VPS сервера
 
-Ubuntu + Nginx (front-end) + Apache (back-end) + PHP
+
+*Данная инструкция является пошаговым алгоритмом настройки VPS под определенные ниже задачи и условия:*
+
+*1. Используется операционная система Ubuntu 14.04*
+
+*2. Используется стек Nginx as frontend + Apache as backend*
+
+*3. Используется база данных MySQL*
+
+*4. Опционально: VPS настраивается для хостинга wordpress-сайтов*
+
+*5. Опционально: автоматический deploy сайта из git-репозитория на bitbucket.org*
+
 
 ## Базовые настройки
 
@@ -100,7 +112,7 @@ Listen 81
 ```
 $ sudo nano /etc/apache2/sites-available/000-default.conf
 ```
-Для каждого сайта создать конфиг в /etc/apache2/sites-available/
+Для каждого сайта создать конфиг в `/etc/apache2/sites-available/`
 ```
 $ sudo nano /etc/apache2/sites-available/example.com.conf
 ```
@@ -239,7 +251,7 @@ location /phpmyadmin/ {
 }
 ```
 
-Для каждого сайта создать конфиг в /etc/nginx/sites-enabled/
+Для каждого сайта создать конфиг в `/etc/nginx/sites-enabled/`
 ```
 $ sudo nano /etc/nginx/sites-enabled/example.com
 ```
@@ -271,4 +283,89 @@ server {
  	server_name www.example.com;
  	rewrite ^(.*) http://example.com$1 permanent;
 }
+```
+## Автоматический deploy из git-репозитория на bitbucket.org
+
+*По [инструкции](http://jonathannicol.com/blog/2013/11/19/automated-git-deployments-from-bitbucket/), с дополнениями.*
+
+Подразумевается, что на bitbucket.org уже создан приватный git-репозиторий.
+
+Определить под каким пользователем работает Apache (скорее всего это www-data)
+
+Сгенерировать ssh ключ для этого пользователя. Домашняя папка пользователя www-data `/var/www/`.
+```
+$ sudo -u www-data ssh-keygen -t rsa
+```
+При генерации можно оставить имя файла по умолчанию (id_rsa) или указать своё (например, bitbucket_rsa)
+
+Добавить полученный ключ в Deployment keys репозитория (Settings -> Deployment keys)
+
+Создать директорию для хранения репозитория на сервере. Например `/var/git-repos`.
+```
+$ sudo mkdir /var/www/git-repos
+```
+Зайти в неё и клонировать репозиторий с ключем --mirror
+```
+$ cd /var/www/git-repos
+$ sudo -u www-data git clone --mirror git@bitbucket.org:username/example.git
+```
+И скопировть файлы из репозитория в папку с сайтом
+```
+$ cd example.git
+$ sudo -u www-data GIT_WORK_TREE=/var/www/example.com/public_html git checkout -f master
+```
+Команды выполняются от имени пользователя www-data, чтобы сразу выявить возможные проблемы с доступом.
+
+Создать файлы скриптов деплоя
+```
+$ cd /var/www/example.com/public_html
+$ mkdir deploy
+$ cd deploy
+$ touch deploy.log
+$ sudo nano deploy.php
+```
+Сам скрипт
+```
+<?php
+$repo_dir = '/var/www/git-repos/example.git';
+$web_root_dir = '/var/www/example.com/public_html';
+
+// Full path to git binary is required if git is not in your PHP user's path. Otherwise just use 'git'.
+$git_bin_path = 'git';
+
+$update = false;
+
+// Parse data from Bitbucket hook payload
+$payload = json_decode($_POST['payload']);
+
+if (empty($payload->commits)){
+  // When merging and pushing to bitbucket, the commits array will be empty.
+  // In this case there is no way to know what branch was pushed to, so we will do an update.
+  $update = true;
+} else {
+  foreach ($payload->commits as $commit) {
+    $branch = $commit->branch;
+    if ($branch === 'master' || isset($commit->branches) && in_array('master', $commit->branches)) {
+      $update =	true;
+      break;
+    }
+  }
+}
+
+if ($update) {
+  // Do a git checkout to the web root
+  exec('cd ' . $repo_dir . ' && ' . $git_bin_path  . ' fetch');
+  exec('cd ' . $repo_dir . ' && GIT_WORK_TREE=' . $web_root_dir . ' ' . $git_bin_path  . ' checkout -f');
+
+  // Log the deployment
+  $commit_hash = shell_exec('cd ' . $repo_dir . ' && ' . $git_bin_path  . ' rev-parse --short HEAD');
+  file_put_contents('deploy.log', date('m/d/Y h:i:s a') . " Deployed branch: " .  $branch . " Commit: " . $commit_hash . "\n", FILE_APPEND);
+}
+?>
+```
+
+У пользователя www-data должны быть права на директорию с git-репозиторием, и на директорию с файлами сайта.
+```
+$ sudo chown -R www-data /var/www
+$ sudo chown -R www-data /var/www/git-repos
 ```
