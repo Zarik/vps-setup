@@ -96,6 +96,10 @@ $ sudo nano /etc/apache2/ports.conf
 ```
 Listen 81
 ```
+Поменять порт на 81 в дефолтном конфиге
+```
+$ sudo nano /etc/apache2/sites-available/000-default.conf
+```
 Для каждого сайта создать конфиг в /etc/apache2/sites-available/
 ```
 $ sudo nano /etc/apache2/sites-available/example.com.conf
