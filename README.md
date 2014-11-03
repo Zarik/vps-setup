@@ -292,18 +292,36 @@ server {
 
 Определить под каким пользователем работает Apache (скорее всего это www-data)
 
+У пользователя www-data должны быть права на директорию `/var/www/`.
+```
+$ sudo chown -R www-data /var/www
+```
+
 Сгенерировать ssh ключ для этого пользователя. Домашняя папка пользователя www-data `/var/www/`.
 ```
 $ sudo -u www-data ssh-keygen -t rsa
 ```
 При генерации можно оставить имя файла по умолчанию (id_rsa) или указать своё (например, bitbucket_rsa)
 
+Создать файл config в `/var/www/.ssh`
+```
+$ sudo -u www-data nano /var/www/.ssh/config
+```
+```
+Host bitbucket.org
+ IdentityFile ~/.ssh/bitbucket_rsa
+```
 Добавить полученный ключ в Deployment keys репозитория (Settings -> Deployment keys)
 
 Создать директорию для хранения репозитория на сервере. Например `/var/git-repos`.
 ```
-$ sudo mkdir /var/www/git-repos
+$ sudo mkdir /var/git-repos
 ```
+Дать права на директорию пользователю www-data
+```
+$ sudo chown -R www-data /var/git-repos
+```
+
 Зайти в неё и клонировать репозиторий с ключем --mirror
 ```
 $ cd /var/www/git-repos
@@ -364,8 +382,4 @@ if ($update) {
 ?>
 ```
 
-У пользователя www-data должны быть права на директорию с git-репозиторием, и на директорию с файлами сайта.
-```
-$ sudo chown -R www-data /var/www
-$ sudo chown -R www-data /var/www/git-repos
-```
+
