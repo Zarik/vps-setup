@@ -342,10 +342,8 @@ $ cd deploy
 $ touch deploy.log
 $ sudo nano deploy.php
 ```
-Сам скрипт
+Сам скрипт (предполагаются 2 ветки - master и production в разных папках).
 ```
-
-
 <?php
 
 // Examine the Bitbucket payload that’s being sent to deployment script
