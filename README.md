@@ -99,6 +99,16 @@ $ sudo a2enmod ssl
 $ sudo a2enmod rewrite
 $ sudo a2enmod suexec
 $ sudo a2enmod include
+$ sudo a2enmod expires
+$ sudo a2enmod headers
+```
+
+Отключить KeepAlive
+```
+$ sudo nano /etc/apache2/apache2.conf
+```
+```
+KeepAlive off
 ```
 
 Сменить порт
