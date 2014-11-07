@@ -323,6 +323,14 @@ Host bitbucket.org
 ```
 Добавить полученный ключ в Deployment keys репозитория (Settings -> Deployment keys)
 
+Права доступа на ключи
+```
+$ sudo chmod 0755 ~/.ssh
+$ sudo chmod 0600 ~/.ssh/id_rsa
+$ sudo chmod 0600 ~/.ssh/id_rsa.pub
+$ sudo chmod 0644 ~/.ssh/known_hosts
+```
+
 Создать директорию для хранения репозитория на сервере. Например `/var/git-repos`.
 ```
 $ sudo mkdir /var/git-repos
