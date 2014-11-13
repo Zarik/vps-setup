@@ -19,12 +19,14 @@ cgi.fix_pathinfo=0
 ```
 $ sudo service php5-fpm restart
 ```
-### Установка MySQL (указать пароль MySQL root пользователя)
+### Установка MySQL 
+Указать пароль MySQL root пользователя
 ```
 $ sudo apt-get mysql-server mysql-client mysql-common
 ```
 
-### Установка phpMyAdmin (не выбирать сервер)
+### Установка phpMyAdmin
+Не выбирать сервер
 ```
 $ sudo apt-get install phpmyadmin
 ```
