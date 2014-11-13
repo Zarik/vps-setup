@@ -15,7 +15,7 @@ $ sudo nano /etc/php5/fpm/php.ini
 cgi.fix_pathinfo=0
 ```
 ```
-$ sudo /etc/init.d/php5-fpm restart
+$ sudo service php5-fpm restart
 ```
 ### Установка MySQL (указать пароль MySQL root пользователя)
 ```
