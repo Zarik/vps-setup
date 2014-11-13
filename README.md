@@ -24,15 +24,15 @@
 $ adduser username
 ```
 
-Дать пользователю привелегии:
+Добавить пользователя в группу sudo:
 ```
-$ visudo
-```
-```
-username ALL=(ALL:ALL) ALL
+$ adduser username sudo
 ```
 
 Залогиниться под новым пользователем.
+```
+$ login username
+```
 
 Сменить ssh-порт по умолчанию (вместо 22) и запретить логин под root
 ```
@@ -53,7 +53,7 @@ $ sudo apt-get update
 $ sudo apt-get upgrade
 ```
 
-## Установка Apache, Nginx, PHP, MySQL, phpMyAdmin, git, postfix, memcached
+## Настройка связки Apache + Nginx
 
 Apache
 ```
