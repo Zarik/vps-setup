@@ -1,3 +1,5 @@
+# Настройка Nginx + PHP-FPM
+
 ### Установка Nginx
 ```
 $ sudo apt-get install nginx
