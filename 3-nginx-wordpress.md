@@ -43,6 +43,7 @@ server
 	  deny all;
 	  return 404;
     }
+}
 ```
 
 
