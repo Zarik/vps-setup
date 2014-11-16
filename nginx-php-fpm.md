@@ -71,6 +71,10 @@ server {
     }
 }
 ```
+```
+$ sudo nano /etc/nginx/nginx.conf
+```
+worker_processes = количеству ядер процессора
 
 Делаем доступ к phpmyadmin
 ```
