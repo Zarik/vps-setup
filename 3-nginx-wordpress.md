@@ -86,7 +86,7 @@ location ~* /(?:uploads|files)/.*\.php$ {
 }
 ```
 
-### Конфиг
+### Конфиг для сайта
 
 ```
 $ sudo touch /etc/nginx/sites-available/example.com
@@ -106,15 +106,15 @@ server {
 server {
 	listen  80;
 	server_name  example.com; 
-	root   /var/www/example.com;
+	root   /var/www/example.com/public_html;
 	index  index.php;
 	
 	include common/wordpress-restrictions;
 	include common/wordpress-super-cache;
 
-	location / {
-		try_files $uri $uri/ /index.php?q=$uri&$args;
-	}
+	#location / {
+	#	try_files $uri $uri/ /index.php?q=$uri&$args;
+	#}
 	
 	location ~*^.+.(jpg|jpeg|gif|png|ico|css|bmp|swf|js|mov|avi|mp4|mpeg4)$ {
 		access_log off;
