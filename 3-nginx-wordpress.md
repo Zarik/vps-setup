@@ -6,18 +6,22 @@
 
 ```
 $ sudo mkdir /etc/nginx/common
-$ sudo nano /etc/nginx/common/upstream
 ```
 
+PHP-FPM
 ```
-upstream php-fpm
-{
+$ sudo nano /etc/nginx/common/upstream
+```
+```
+upstream php-fpm {
 	server unix:/var/run/php5-fpm.sock;
 }
 ```
 
+Wordpress Super Cache
 ```
 $ sudo nano /etc/nginx/common/wordpress-super-cache
+```
 ```
 set $cache_uri $request_uri;
 
@@ -43,11 +47,6 @@ if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).
 location / {
         try_files /wp-content/cache/supercache/$http_host/$cache_uri/index.html $uri $uri/ /index.php?$args ;
 }    
-```
-upstream php-fpm
-{
-	server unix:/var/run/php5-fpm.sock;
-}
 ```
 
 ### Конфиг
