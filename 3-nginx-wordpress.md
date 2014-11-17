@@ -17,6 +17,19 @@ upstream php-fpm {
 	server unix:/var/run/php5-fpm.sock;
 }
 ```
+PHP-FPM server
+```
+$ sudo nano /etc/nginx/common/php-fpm-server
+```
+```
+location ~ \.php$ {
+	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+	fastcgi_pass unix:/var/run/php5-fpm.sock;
+	fastcgi_index index.php;
+	fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+	include fastcgi_params;
+}   
+```
 
 Wordpress Super Cache
 ```
@@ -48,6 +61,30 @@ location / {
         try_files /wp-content/cache/supercache/$http_host/$cache_uri/index.html $uri $uri/ /index.php?$args ;
 }    
 ```
+Wordpress restrictions
+```
+$ sudo nano /etc/nginx/common/wordpress-restrictions
+```
+```
+location = /robots.txt {
+	allow all;
+	log_not_found off;
+	access_log off;
+}
+
+location ~ /\. {
+	deny all;
+}
+
+location ~ /wp-config.php {
+	deny  all;
+}
+
+# Deny access to any files with a .php extension in the uploads directory
+location ~* /(?:uploads|files)/.*\.php$ {
+	deny all;
+}
+```
 
 ### Конфиг
 
@@ -59,6 +96,8 @@ $ sudo nano /etc/nginx/sites-available/example.com
 ```
 include common/upstream;
 
+
+
 server {
 	listen  80;
 	server_name  www.example.com;
@@ -69,36 +108,20 @@ server {
 	server_name  example.com; 
 	root   /var/www/example.com;
 	index  index.php;
+	
+	include common/wordpress-restrictions;
+	include common/wordpress-super-cache;
 
 	location / {
 		try_files $uri $uri/ /index.php?q=$uri&$args;
 	}
+	
 	location ~*^.+.(jpg|jpeg|gif|png|ico|css|bmp|swf|js|mov|avi|mp4|mpeg4)$ {
 		access_log off;
 		expires 3d;
 	}
 	
-	location ~ \.php$ {
-        	fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        	fastcgi_pass unix:/var/run/php5-fpm.sock;
-        	fastcgi_index index.php;
-        	fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        	include fastcgi_params;
-        }
-
-	location = /robots.txt {
-		allow all;
-		log_not_found off;
-		access_log off;
-	}
-	
-	location ~ /wp-config.php {
-		deny  all;
-	}
-	
-	location ~ /\.ht {
-		deny  all;
-	}
+	include common/php-fpm-server;
 }
 ```
 
